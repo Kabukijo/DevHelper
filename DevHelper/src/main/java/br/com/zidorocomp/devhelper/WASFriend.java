@@ -2,12 +2,8 @@ package br.com.zidorocomp.devhelper;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
-
-import org.apache.commons.io.IOUtils;
 
 public class WASFriend {
 
@@ -141,97 +137,105 @@ public class WASFriend {
 	
 	private void deploy(String profile, String cell, String node, String server, String appPath) throws IOException {
 		
-        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c",  "cd " + wasPath + "/profiles/" + profile + "/bin && wsadmin");
-        
-        Process p = builder.start();
-        
-        System.out.println(IOUtils.toString(p.getInputStream(), "UTF-8"));
-        
-		System.out.println();
+//        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c",  "cd " + wasPath + "/profiles/" + profile + "/bin && wsadmin");
+//        
+//        Process p = builder.start();
+//        
+//        System.out.println(IOUtils.toString(p.getInputStream(), "UTF-8"));
+//        
+//		System.out.println();
 		
 	}
 	
-	private void clearLogs(File appServer) throws Exception{
+	private void clearLogs(File appServer) throws Exception {
 
-		File logDir = new File(appServer.getAbsolutePath() + "/logs");
-		File tranlogDir = new File(appServer.getAbsolutePath() + "/tranlog");
-		File binLogDir = new File(appServer.getAbsolutePath() + "/bin/logs/app");
-		File tempDir = new File(appServer.getAbsolutePath() + "/temp");
-		File wsTempDir = new File(appServer.getAbsolutePath() + "/wstemp");
+		if (appServer.isDirectory()) {
 
-		for (File logFile : logDir.listFiles()) {
-			rmDir(logFile);
-		}
+			File logDir = new File(appServer.getAbsolutePath() + "/logs");
+			File tranlogDir = new File(appServer.getAbsolutePath() + "/tranlog");
+			File binLogDir = new File(appServer.getAbsolutePath() + "/bin/logs/app");
+			File tempDir = new File(appServer.getAbsolutePath() + "/temp");
+			File wsTempDir = new File(appServer.getAbsolutePath() + "/wstemp");
 
-		for (File logFile : tranlogDir.listFiles()) {
-			rmDir(logFile);
-		}
+			for (File logFile : logDir.listFiles()) {
+				rmDir(logFile);
+			}
 
-		for (File logFile : binLogDir.listFiles()) {
-			rmDir(logFile);
-		}
+			for (File logFile : tranlogDir.listFiles()) {
+				rmDir(logFile);
+			}
+			
+			if (binLogDir.listFiles() != null) {
+				for (File logFile : binLogDir.listFiles()) {
+					rmDir(logFile);
+				}
+			}
 
-		for (File tempFile : tempDir.listFiles()) {
-			rmDir(tempFile);
-		}
+			for (File tempFile : tempDir.listFiles()) {
+				rmDir(tempFile);
+			}
 
-		for (File tempFile : wsTempDir.listFiles()) {
-			rmDir(tempFile);
+			for (File tempFile : wsTempDir.listFiles()) {
+				rmDir(tempFile);
+			}
 		}
 	}
 	
 	private void clearDeployRecords(File appServer) throws Exception {
-
-		File cellsDir = new File(appServer.getAbsolutePath() + "/config/cells");
-		File tempCellsDir = new File(appServer.getAbsolutePath() + "/config/temp/download/cells");
-		File installedAppsDir = new File(appServer.getAbsolutePath() + "/installedApps");
-
-		for (File cellNodeDir : cellsDir.listFiles()) {
-
-			for (File deployedApp : new File(cellNodeDir.getAbsolutePath() + "/applications").listFiles()) {
-				if (!wasApps.stream().filter(wasApp -> deployedApp.getName().matches(wasApp)).findFirst().isPresent()) {
-					rmDir(deployedApp);
-				}
-			}
-
-			for (File deployedApp : new File(cellNodeDir.getAbsolutePath() + "/blas").listFiles()) {
-				if (!wasApps.stream().filter(wasApp -> deployedApp.getName().matches(wasApp)).findFirst().isPresent()) {
-					rmDir(deployedApp);
-				}
-			}
-
-			for (File deployedApp : new File(cellNodeDir.getAbsolutePath() + "/cus").listFiles()) {
-				if (!wasApps.stream().filter(wasApp -> deployedApp.getName().matches(wasApp)).findFirst().isPresent()) {
-					rmDir(deployedApp);
-				}
-			}
-		}
-
-		for (File cellNodeDir : tempCellsDir.listFiles()) {
-
-			for (File deployedApp : new File(cellNodeDir.getAbsolutePath() + "/applications").listFiles()) {
-				if (!wasApps.stream().filter(wasApp -> deployedApp.getName().matches(wasApp)).findFirst().isPresent()) {
-					rmDir(deployedApp);
-				}
-			}
-
-			for (File deployedApp : new File(cellNodeDir.getAbsolutePath() + "/blas").listFiles()) {
-				if (!wasApps.stream().filter(wasApp -> deployedApp.getName().matches(wasApp)).findFirst().isPresent()) {
-					rmDir(deployedApp);
-				}
-			}
-
-			for (File deployedApp : new File(cellNodeDir.getAbsolutePath() + "/cus").listFiles()) {
-				if (!wasApps.stream().filter(wasApp -> deployedApp.getName().matches(wasApp)).findFirst().isPresent()) {
-					rmDir(deployedApp);
-				}
-			}
-		}
 		
-		for (File cellNodeDir : installedAppsDir.listFiles()) {
-			for (File deployedApp : cellNodeDir.listFiles()) {
-				if (!wasApps.stream().filter(wasApp -> deployedApp.getName().matches(wasApp)).findFirst().isPresent()) {
-					rmDir(deployedApp);
+		if(appServer.isDirectory()) {
+
+			File cellsDir = new File(appServer.getAbsolutePath() + "/config/cells");
+			File tempCellsDir = new File(appServer.getAbsolutePath() + "/config/temp/download/cells");
+			File installedAppsDir = new File(appServer.getAbsolutePath() + "/installedApps");
+	
+			for (File cellNodeDir : cellsDir.listFiles()) {
+	
+				for (File deployedApp : new File(cellNodeDir.getAbsolutePath() + "/applications").listFiles()) {
+					if (!wasApps.stream().filter(wasApp -> deployedApp.getName().matches(wasApp)).findFirst().isPresent()) {
+						rmDir(deployedApp);
+					}
+				}
+	
+				for (File deployedApp : new File(cellNodeDir.getAbsolutePath() + "/blas").listFiles()) {
+					if (!wasApps.stream().filter(wasApp -> deployedApp.getName().matches(wasApp)).findFirst().isPresent()) {
+						rmDir(deployedApp);
+					}
+				}
+	
+				for (File deployedApp : new File(cellNodeDir.getAbsolutePath() + "/cus").listFiles()) {
+					if (!wasApps.stream().filter(wasApp -> deployedApp.getName().matches(wasApp)).findFirst().isPresent()) {
+						rmDir(deployedApp);
+					}
+				}
+			}
+	
+			for (File cellNodeDir : tempCellsDir.listFiles()) {
+	
+				for (File deployedApp : new File(cellNodeDir.getAbsolutePath() + "/applications").listFiles()) {
+					if (!wasApps.stream().filter(wasApp -> deployedApp.getName().matches(wasApp)).findFirst().isPresent()) {
+						rmDir(deployedApp);
+					}
+				}
+	
+				for (File deployedApp : new File(cellNodeDir.getAbsolutePath() + "/blas").listFiles()) {
+					if (!wasApps.stream().filter(wasApp -> deployedApp.getName().matches(wasApp)).findFirst().isPresent()) {
+						rmDir(deployedApp);
+					}
+				}
+	
+				for (File deployedApp : new File(cellNodeDir.getAbsolutePath() + "/cus").listFiles()) {
+					if (!wasApps.stream().filter(wasApp -> deployedApp.getName().matches(wasApp)).findFirst().isPresent()) {
+						rmDir(deployedApp);
+					}
+				}
+			}
+			
+			for (File cellNodeDir : installedAppsDir.listFiles()) {
+				for (File deployedApp : cellNodeDir.listFiles()) {
+					if (!wasApps.stream().filter(wasApp -> deployedApp.getName().matches(wasApp)).findFirst().isPresent()) {
+						rmDir(deployedApp);
+					}
 				}
 			}
 		}
@@ -244,6 +248,7 @@ public class WASFriend {
 				if (!f.delete())
 					rmDir(f);
 
+		//precisa disso?
 		if (!dir.delete())
 			rmDir(dir);
 	}
